@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciclo Lunar IA v6 (por Jaime Paz)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        :root {
+            --bg-color: #0c0a1f;
+            --card-color: #1a1832;
+            --text-color: #f0f0f0;
+            --primary-color: #8da0ff;
+            --secondary-color: #b0c4ff;
+            --accent-color: #ffc940;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .app-card {
+            background-color: var(--card-color);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #current-date {
+            font-size: 1.1em;
+            font-weight: 300;
+            color: var(--secondary-color);
+            margin: 0;
+        }
+        #phase-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 10px 0;
+            min-height: 30px;
+        }
+        .feeding-info {
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .feeding-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 0.9em;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+        #feeding-percentage {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 0;
+        }
+        #molt-stage {
+            font-size: 1em;
+            color: var(--secondary-color);
+            margin-top: 8px;
+            font-style: italic;
+        }
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        .nav-button {
+            background-color: var(--primary-color);
+            color: #1a1832;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            width: 120px;
+        }
+        .nav-button:active {
+            transform: scale(0.95);
+        }
+        .disclaimer {
+            font-size: 0.75em;
+            color: var(--secondary-color);
+            margin-top: 25px;
+            line-height: 1.4;
+            opacity: 0.7;
+        }
+        .author-info {
+            font-size: 1.2em; /* Tamaño ajustado para legibilidad */
+            color: var(--secondary-color);
+            margin-top: 20px;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        .author-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-card">
+        <h2 id="current-date">Cargando...</h2>
+        
+        <h1 id="phase-name">Fase Lunar</h1>
+        <p id="illumination"></p>
+
+        <div class="feeding-info">
+            <h3>Camarones Comiendo (Estimado)</h3>
+            <p id="feeding-percentage">--%</p>
+            <p id="molt-stage">Estadio de Muda</p>
+        </div>
+
+        <div class="nav-controls">
+            <button id="prev-day" class="nav-button">&lt; Día Anterior</button>
+            <button id="next-day" class="nav-button">Día Siguiente &gt;</button>
+        </div>
+        
+        <p class="disclaimer">
+            Los porcentajes son estimaciones para guía de manejo y deben ser complementados con observaciones en la granja.
+        </p>
+        
+        <div class="author-info">
+            App por: Jaime Ulises Paz Lopez<br>
+            <a href="https://wa.me/584121043327" target="_blank">Contactar por WhatsApp</a>
+        </div>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- REFERENCIAS A ELEMENTOS DEL DOM ---
+    const dateDisplay = document.getElementById('current-date');
+    const phaseNameDisplay = document.getElementById('phase-name');
+    const illuminationDisplay = document.getElementById('illumination');
+    const feedingPercentageDisplay = document.getElementById('feeding-percentage');
+    const moltStageDisplay = document.getElementById('molt-stage');
+    const prevDayButton = document.getElementById('prev-day');
+    const nextDayButton = document.getElementById('next-day');
+
+    // --- CONFIGURACIÓN Y ESTADO DE LA APLICACIÓN ---
+    let currentDate = new Date('2025-08-01T19:21:46-04:00');
+    // Lógica de API y generación de imagen eliminada
+
+    // --- BASE DE DATOS CIENTÍFICA ---
+    const shrimpData = {
+        "Luna Nueva":           { stage: "Ecdisis / Postmuda Temprana", isRange: true, feedValue: 20 },
+        "Creciente Iluminante": { stage: "Postmuda -> Intermuda", isRange: false, startDay: 1.85, endDay: 5.53, startFeed: 40, endFeed: 100 },
+        "Cuarto Creciente":     { stage: "Intermuda", isRange: true, feedValue: 100 },
+        "Gibosa Creciente":     { stage: "Intermuda -> Premuda", isRange: false, startDay: 9.22, endDay: 12.91, startFeed: 100, endFeed: 60 },
+        "Luna Llena":           { stage: "Ecdisis / Postmuda Temprana", isRange: true, feedValue: 20 },
+        "Gibosa Menguante":     { stage: "Postmuda -> Intermuda", isRange: false, startDay: 16.61, endDay: 20.30, startFeed: 40, endFeed: 100 },
+        "Cuarto Menguante":     { stage: "Intermuda", isRange: true, feedValue: 100 },
+        "Menguante Iluminante": { stage: "Intermuda -> Premuda", isRange: false, startDay: 23.99, endDay: 27.68, startFeed: 100, endFeed: 60 }
+    };
+    
+    // --- LÓGICA DE CÁLCULO ASTRONÓMICO ---
+    const LUNAR_MONTH = 29.530588853;
+    const EPOCH = new Date('2000-01-06T18:14:00Z'); // Known New Moon (UTC)
+
+    function getMoonPhase(date) {
+        const diffInMs = date.getTime() - EPOCH.getTime();
+        const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+        const age = (diffInDays < 0) ? (diffInDays % LUNAR_MONTH + LUNAR_MONTH) : (diffInDays % LUNAR_MONTH);
+
+        let phaseName = "";
+        if (age < 1.85) phaseName = "Luna Nueva";
+        else if (age < 5.53) phaseName = "Creciente Iluminante";
+        else if (age < 9.22) phaseName = "Cuarto Creciente";
+        else if (age < 12.91) phaseName = "Gibosa Creciente";
+        else if (age < 16.61) phaseName = "Luna Llena";
+        else if (age < 20.30) phaseName = "Gibosa Menguante";
+        else if (age < 23.99) phaseName = "Cuarto Menguante";
+        else if (age < 27.68) phaseName = "Menguante Iluminante";
+        else phaseName = "Luna Nueva";
+        
+        const illumination = 0.5 * (1 - Math.cos(2 * Math.PI * age / LUNAR_MONTH));
+        return { age, phaseName, illumination: Math.round(illumination * 100) };
+    }
+
+    // --- FUNCIÓN PARA GENERAR IMAGEN ELIMINADA ---
+
+    // --- FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN ---
+    function updateDisplay(date) {
+        const { age, phaseName, illumination } = getMoonPhase(date);
+        const data = shrimpData[phaseName];
+
+        dateDisplay.textContent = date.toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        phaseNameDisplay.textContent = phaseName;
+        illuminationDisplay.textContent = `Iluminación: ${illumination}%`;
+        moltStageDisplay.textContent = `Estadio: ${data.stage}`;
+        
+        if (data.isRange) {
+            feedingPercentageDisplay.textContent = data.feedValue + "%";
+        } else {
+            const phaseDuration = data.endDay - data.startDay;
+            const ageIntoPhase = age - data.startDay;
+            const progress = ageIntoPhase / phaseDuration;
+            const feedRange = data.endFeed - data.startFeed;
+            const interpolatedFeed = data.startFeed + (feedRange * progress);
+            feedingPercentageDisplay.textContent = Math.round(interpolatedFeed) + "%";
+        }
+        
+        // --- LÓGICA DE CARGA DE IMAGEN ELIMINADA ---
+    }
+    
+    // --- EVENT LISTENERS PARA NAVEGACIÓN ---
+    prevDayButton.addEventListener('click', () => {
+        currentDate.setDate(currentDate.getDate() - 1);
+        updateDisplay(currentDate);
+    });
+
+    nextDayButton.addEventListener('click', () => {
+        currentDate.setDate(currentDate.getDate() + 1);
+        updateDisplay(currentDate);
+    });
+
+    // --- INICIALIZACIÓN DE LA APP ---
+    updateDisplay(currentDate);
+});
+</script>
+</body>
+</html>
