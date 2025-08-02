@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextDayButton = document.getElementById('next-day');
 
     // --- CONFIGURACIÓN Y ESTADO DE LA APLICACIÓN ---
-    let currentDate = new Date('2025-08-01T19:21:46-04:00');
-    // Lógica de API y generación de imagen eliminada
+    // CAMBIO: Se reemplaza la fecha fija por la fecha actual del sistema.
+    let currentDate = new Date(); 
 
     // --- BASE DE DATOS CIENTÍFICA ---
     const shrimpData = {
@@ -197,8 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return { age, phaseName, illumination: Math.round(illumination * 100) };
     }
 
-    // --- FUNCIÓN PARA GENERAR IMAGEN ELIMINADA ---
-
     // --- FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN ---
     function updateDisplay(date) {
         const { age, phaseName, illumination } = getMoonPhase(date);
@@ -219,8 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const interpolatedFeed = data.startFeed + (feedRange * progress);
             feedingPercentageDisplay.textContent = Math.round(interpolatedFeed) + "%";
         }
-        
-        // --- LÓGICA DE CARGA DE IMAGEN ELIMINADA ---
     }
     
     // --- EVENT LISTENERS PARA NAVEGACIÓN ---
